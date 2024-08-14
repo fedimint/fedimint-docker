@@ -223,8 +223,7 @@ set_env_vars() {
       else
         echo "Keeping current value for $var_name"
       fi
-
-      echo # Add a blank line for readability
+      echo
     fi
   done <"$INSTALL_DIR/.env"
 
