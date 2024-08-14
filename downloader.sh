@@ -27,18 +27,10 @@ check_and_install_docker() {
 
   echo "Docker and Docker Compose are ready."
 }
-check_and_install_docker
 
-# 2. Check if fedimint-docker service dir exists
-INSTALL_DIR="fedimint-service"
-if [ -d "$INSTALL_DIR" ]; then
-  echo "Directory $INSTALL_DIR exists. Please remove it before running this script again."
-  exit 1
-fi
-
-# 3. Selectors for Install Type:
+# 2. Selectors for Install Type:
 FEDIMINT_SERVICE=""
-# 3a. Guardian or Gateway
+# 2a. Guardian or Gateway
 select_guardian_or_gateway() {
   echo
   echo "Install a Fedimint Guardian or a Lightning Gateway?"
@@ -62,7 +54,7 @@ select_guardian_or_gateway() {
   done
 }
 
-# 3b. Mainnet or Mutinynet
+# 2b. Mainnet or Mutinynet
 select_mainnet_or_mutinynet() {
   echo
   echo "Run on Mainnet or Mutinynet?"
@@ -158,18 +150,168 @@ select_local_or_remote_bitcoind() {
   done
 }
 
-select_guardian_or_gateway
-select_mainnet_or_mutinynet
+# 4. Build the service dir and download the docker-compose and .env files
+build_service_dir() {
+  echo "Creating directory $INSTALL_DIR..."
+  mkdir -p "$INSTALL_DIR"
 
-if [[ "$FEDIMINT_SERVICE" == "guardian"* ]]; then
-  select_bitcoind_or_esplora
-  if [[ "$FEDIMINT_SERVICE" == *"_bitcoind" ]]; then
-    select_local_or_remote_bitcoind
+  BASE_URL="https://raw.githubusercontent.com/fedimint/fedimint-docker/master/configurations/$FEDIMINT_SERVICE"
+
+  echo "Downloading docker-compose.yaml..."
+  curl -sSL "$BASE_URL/docker-compose.yaml" -o "$INSTALL_DIR/docker-compose.yaml"
+
+  echo "Downloading .env file..."
+  curl -sSL "$BASE_URL/.env" -o "$INSTALL_DIR/.env"
+
+  echo "Files downloaded successfully."
+}
+
+# INSTALLER
+installer() {
+  check_and_install_docker
+  select_guardian_or_gateway
+  select_mainnet_or_mutinynet
+  if [[ "$FEDIMINT_SERVICE" == "guardian"* ]]; then
+    select_bitcoind_or_esplora
+    if [[ "$FEDIMINT_SERVICE" == *"_bitcoind" ]]; then
+      select_local_or_remote_bitcoind
+    fi
+  else
+    select_local_or_remote_lnd
   fi
-else
-  select_local_or_remote_lnd
+
+  build_service_dir
+}
+
+# 5. Set env vars
+set_env_vars() {
+  echo "Setting environment variables..."
+
+  # Read the .env file line by line
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    # Skip empty lines
+    if [[ -z "$line" ]]; then
+      continue
+    fi
+
+    # If it's a comment, store it
+    if [[ $line == \#* ]]; then
+      comment="$line"
+    # If it's a variable
+    elif [[ $line == *=* ]]; then
+      # Split the line into variable name and value
+      var_name="${line%%=*}"
+      var_value="${line#*=}"
+
+      # Remove quotes from the value if present
+      var_value="${var_value%\"}"
+      var_value="${var_value#\"}"
+
+      # Display the comment, variable name, and current value
+      echo "$comment"
+      echo "Current value of $var_name: $var_value"
+
+      # Ask user if they want to change the value
+      read -p "Do you want to change this value? (y/N): " change_value
+
+      if [[ $change_value =~ ^[Yy]$ ]]; then
+        # If yes, prompt for new value
+        read -p "Enter new value for $var_name: " new_value
+        # Update the value in the .env file
+        sed -i "s|^$var_name=.*|$var_name=\"$new_value\"|" "$INSTALL_DIR/.env"
+        echo "Updated $var_name to: $new_value"
+      else
+        echo "Keeping current value for $var_name"
+      fi
+
+      echo # Add a blank line for readability
+    fi
+  done <"$INSTALL_DIR/.env"
+
+  # Source the updated .env file
+  source "$INSTALL_DIR/.env"
+  echo "Environment variables set."
+}
+
+# 6. Verify DNS
+verify_dns() {
+  EXTERNAL_IP=$(curl -4 -sSL ifconfig.me)
+  echo "Setting up TLS certificates and DNS records:"
+  echo "Your ip is $EXTERNAL_IP. You __must__ open the port 443 on your firewall to setup the TLS certificates."
+  echo "If you are unable to open this port, then the TLS setup and everything else will catastrophically or silently fail."
+  echo "So in this case you can not use this script and you must setup the TLS certificates manually or use a script without TLS"
+  read -p "Press enter to acknowledge this " -r -n 1 </dev/tty
+  echo
+  echo "Create a DNS record pointing to this machine's ip: $EXTERNAL_IP"
+  echo "Once you've set it up, enter the host_name here: (e.g. fedimint.com)"
+  read -p "Enter the host_name: " host_name
+  echo "Verifying DNS..."
+  echo
+  echo "DNS propagation may take a while and and caching may cause issues,"
+  echo "you can verify the DNS mapping in another terminal with:"
+  echo "${host_name[*]} -> $EXTERNAL_IP"
+  echo "Using dig: dig +short $host_name"
+  echo "Using nslookup: nslookup $host_name"
+  echo
+  read -p "Press enter after you have verified them" -r -n 1 </dev/tty
+  echo
+  while true; do
+    error=""
+    echo "Checking DNS records..."
+    resolved_host=$(resolve_host $hose_name)
+    if [[ -z $resolved_host ]]; then
+      echo "Error: $hose_name does not resolve to anything!"
+      error=true
+    elif [[ $resolved_host != "$EXTERNAL_IP" ]]; then
+      echo "Error: $hose_name does not resolve to $EXTERNAL_IP, it resolves to $resolved_host"
+      error=true
+    fi
+
+    if [[ -z $error ]]; then
+      echo "All DNS records look good"
+      break
+    else
+      echo "Some DNS records are not correct"
+      read -p "Check again? [Y/n] " -n 1 -r -a check_again </dev/tty
+      if [[ ${check_again[*]} =~ ^[Yy]?$ ]]; then
+        continue
+      else
+        echo
+        echo "If you are sure the DNS records are correct, you can continue without checking"
+        echo "But if there is some issue with them, the Let's Encrypt certificates will not be able to be created"
+        echo "And you may receive a throttle error from Let's Encrypt that may take hours to go away"
+        echo "Therefore we recommend you double check everything"
+        echo "If you suspect it's just a caching issue, then wait a few minutes and try again. Do not continue."
+        echo
+        read -p "Continue without checking? [y/N] " -n 1 -r -a continue_without_checking </dev/tty
+        echo
+        if [[ ${continue_without_checking[*]} =~ ^[Yy]$ ]]; then
+          echo "You have been warned, continuing..."
+          break
+        fi
+      fi
+    fi
+  done
+}
+
+# 7. Run the service
+run_service() {
+  echo "Running the service..."
+  cd "$INSTALL_DIR" && docker compose up -d
+}
+
+# MAIN SCRIPT
+
+INSTALL_DIR="fedimint-service"
+if [ -d "$INSTALL_DIR" ]; then
+  echo "ERROR: Directory $INSTALL_DIR exists."
+  echo "You can run the service with: cd $INSTALL_DIR && docker compose up -d"
+  echo "If you want to re-run the installer to create a different service,"
+  echo "please remove the directory first or run the installer from a fresh directory / machine."
+  exit 1
 fi
 
-# 4. Build the service dir
-
-# 4. Download the docker-compose and .env files
+installer
+set_env_vars
+verify_dns
+run_service
