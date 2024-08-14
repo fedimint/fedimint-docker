@@ -129,7 +129,7 @@ select_local_or_remote_lnd() {
 # 3d-guardian. New or Existing Bitcoind
 select_local_or_remote_bitcoind() {
   echo
-  echo "Run with Local (start a new Bitcoind node) or Remote (connect to an existing Bitcoind node)?"
+  echo "Run with Local (start a new pruned Bitcoind node) or Remote (connect to an existing Bitcoind node)?"
   echo
   echo "1. Local"
   echo "2. Remote"
