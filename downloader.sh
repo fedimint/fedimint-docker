@@ -1,6 +1,28 @@
 # You can run this script with:
 # curl -sSL https://raw.githubusercontent.com/fedimint/fedimint-docker/master/downloader.sh | bash
 
+# 0. Intro
+intro() {
+  clear
+  echo "=============================================="
+  echo "             Fedimint Installer               "
+  echo "=============================================="
+  echo
+  echo "This script will:"
+  echo "1. Install a Fedimint service on your machine"
+  echo "2. Help you set up and configure DNS"
+  echo "3. Set up TLS certificates"
+  echo
+  echo "You'll need to have a domain name and be able to set the CNAME records to point to this machine."
+  echo
+  echo "=============================================="
+  echo "               Ready to begin?                "
+  echo "=============================================="
+  echo
+  read -p "Press Enter to continue or Ctrl+C to cancel..." </dev/tty
+  echo
+}
+
 # 1. Check and install docker
 DOCKER_COMPOSE="docker compose"
 check_and_install_docker() {
