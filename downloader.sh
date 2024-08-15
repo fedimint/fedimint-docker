@@ -235,7 +235,7 @@ set_env_vars() {
       # Display the variable name and current value
       echo "Current value of $var_name: $var_value"
 
-      # If the variable is not set, loop until a value is provided
+      # If the variable is not set or empty, prompt for a value
       while [[ -z $var_value ]]; do
         read -p "Enter value for $var_name (cannot be empty): " new_value </dev/tty
         if [[ -n $new_value ]]; then
@@ -245,17 +245,17 @@ set_env_vars() {
         fi
       done
 
-      # If the variable is already set, ask if the user wants to change it
-      if [[ -n $var_value ]]; then
-        read -p "Enter new value for $var_name (or press Enter to keep current): " new_value </dev/tty
-        if [[ -n $new_value ]]; then
-          var_value=$new_value
+      # If the variable already had a value, ask if the user wants to change it
+      if [[ $var_value != $new_value ]]; then
+        read -p "Enter new value for $var_name (or press Enter to keep '$var_value'): " change_value </dev/tty
+        if [[ -n $change_value ]]; then
+          var_value=$change_value
         fi
       fi
 
       # Update the value in the .env file (macOS compatible)
       sed -i '' "s|^$var_name=.*|$var_name=\"$var_value\"|" "$INSTALL_DIR/.env"
-      echo "Updated $var_name to: $var_value"
+      echo "Updated $var_name=$var_value"
       echo
     fi
   done <"$INSTALL_DIR/.env"
