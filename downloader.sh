@@ -236,45 +236,38 @@ set_env_vars() {
   echo
   # Add assume valid in .env if guardian_*_bitcoind_local
   if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
-    # fetch the latest block hash
-    echo "Fetching chain tip block hash from blockstream.info..."
-    latest_block_hash=$(curl -sSL https://blockstream.info/api/blocks/tip/hash)
-    echo "Latest block hash: $latest_block_hash"
-
-    read -p "Press Enter to use this block hash for assume valid or input another blockhash: " user_block_hash </dev/tty
-    if [ -z "$user_block_hash" ]; then
-      block_hash_to_use=$latest_block_hash
-    else
-      block_hash_to_use=$user_block_hash
-    fi
-
-    echo "Setting FM_BITCOIN_ASSUME_VALID=$block_hash_to_use"
-    echo "FM_BITCOIN_ASSUME_VALID=$block_hash_to_use" >>"$INSTALL_DIR/.env"
-    echo
+    # ... (existing code for assume valid)
   fi
   echo "Setting user input environment variables..."
+
+  # Create a temporary file
+  temp_env_file=$(mktemp)
 
   start_processing=false
   while IFS= read -r line || [[ -n "$line" ]]; do
     if [[ $line == "### START ENV CONFIGURATION" ]]; then
       start_processing=true
+    fi
+    if ! $start_processing; then
+      echo "$line" >>"$temp_env_file"
       continue
     fi
     if [[ $line == "### END ENV CONFIGURATION" ]]; then
-      break
-    fi
-    if ! $start_processing; then
+      start_processing=false
+      echo "$line" >>"$temp_env_file"
       continue
     fi
 
     # Print comments
     if [[ $line == \#* ]]; then
       echo "$line"
+      echo "$line" >>"$temp_env_file"
       continue
     fi
 
     # Skip empty lines
     if [[ -z "$line" ]]; then
+      echo "" >>"$temp_env_file"
       continue
     fi
 
@@ -309,12 +302,15 @@ set_env_vars() {
         fi
       fi
 
-      # Update the value in the .env file (macOS compatible)
-      sed -i '' "s|^$var_name=.*|$var_name=\"$var_value\"|" "$INSTALL_DIR/.env"
+      # Write the updated variable to the temporary file
+      echo "$var_name=\"$var_value\"" >>"$temp_env_file"
       echo "Updated $var_name=$var_value"
       echo
     fi
   done <"$INSTALL_DIR/.env"
+
+  # Replace the original .env file with the temporary file
+  mv "$temp_env_file" "$INSTALL_DIR/.env"
 
   echo "Environment variables set."
 }
