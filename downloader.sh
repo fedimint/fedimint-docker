@@ -347,8 +347,8 @@ verify_dns() {
   echo "So in this case you can not use this script and you must setup the TLS certificates manually or use a script without TLS"
   read -p "Press enter to acknowledge this " -r -n 1 </dev/tty
   echo
-  echo "Create an "A" record via your DNS provider pointing to this machine's ip: $EXTERNAL_IP"
-  echo "Once you've set it up, enter the host_name here: (e.g. fedimint.com)"
+  echo "Create an A record via your DNS provider pointing to this machine's ip: $EXTERNAL_IP"
+  echo "Once you've set it up, you can continue with the installation"
   read -p "Enter the host_name you set in the environment variables: " host_name
   echo "Verifying DNS..."
   echo
