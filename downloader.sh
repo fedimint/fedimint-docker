@@ -1,25 +1,40 @@
 # You can run this script with:
-# curl -sSL https://raw.githubusercontent.com/fedimint/fedimint-docker/master/downloader.sh | bash
+# bash <(curl -sSf https://raw.githubusercontent.com/fedimint/fedimint-docker/master/downloader.sh)
 
 # 0. Intro
 intro() {
   clear
-  echo "=============================================="
-  echo "             Fedimint Installer               "
-  echo "=============================================="
+  # Get terminal width
+  term_width=$(tput cols)
+
+  # Function to center text
+  center_text() {
+    local text="$1"
+    local padding=$(((term_width - ${#text}) / 2))
+    printf "%${padding}s%s\n" "" "$text"
+  }
+
+  center_text "=============================================="
+  center_text "             Fedimint Installer               "
+  center_text "=============================================="
   echo
-  echo "This script will:"
-  echo "1. Install a Fedimint service on your machine"
-  echo "2. Help you set up and configure DNS"
-  echo "3. Set up TLS certificates"
+
+  center_text "This script will:"
+  center_text "1. Check and install docker"
+  center_text "2. Install a Fedimint service on your machine"
+  center_text "3. Help you set up and configure the service's DNS"
   echo
-  echo "You'll need to have a domain name and be able to set the CNAME records to point to this machine."
+
+  center_text "You'll need to have a domain name and be able to set the"
+  center_text "CNAME records to point to this machine's IP address."
   echo
-  echo "=============================================="
-  echo "               Ready to begin?                "
-  echo "=============================================="
+
+  center_text "=============================================="
+  center_text "               Ready to begin?                "
+  center_text "=============================================="
   echo
-  read -p "Press Enter to continue or Ctrl+C to cancel..." </dev/tty
+
+  read -p "$(center_text "Press Enter to continue or Ctrl+C to cancel...")" </dev/tty
   echo
 }
 intro
