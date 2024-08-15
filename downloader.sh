@@ -406,6 +406,27 @@ run_service() {
   cd "$INSTALL_DIR" && docker compose up -d
 }
 
+# 8. If bitcoind is local, wait for it to sync
+wait_for_bitcoind_sync() {
+  if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
+    echo "Waiting for bitcoind to sync..."
+    while true; do
+      sync_status=$(docker logs bitcoind 2>&1 | grep "Pre-synchronizing blockheaders" | tail -n 1)
+      if [[ $sync_status =~ \(~([0-9]+\.[0-9]+)%\) ]]; then
+        percentage="${BASH_REMATCH[1]}"
+        echo "Current sync progress: $percentage%"
+        if (($(echo "$percentage >= 95" | bc -l))); then
+          echo "Bitcoind sync has reached 95% or higher. Proceeding..."
+          break
+        fi
+      else
+        echo "Waiting for sync to start..."
+      fi
+      sleep 10
+    done
+  fi
+}
+
 # MAIN SCRIPT
 
 INSTALL_DIR="fedimint-service"
@@ -421,3 +442,6 @@ installer
 set_env_vars
 verify_dns
 run_service
+if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
+  wait_for_bitcoind_sync
+fi
