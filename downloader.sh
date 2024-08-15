@@ -191,6 +191,18 @@ installer() {
   build_service_dir
 }
 
+# Add assume valid in .env if guardian_*_bitcoind_local
+set_assume_valid() {
+  if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
+    # fetch the latest block hash
+    echo "Fetching chain tip block hash..."
+    latest_block_hash=$(curl -sSL https://blockstream.info/api/blocks/tip/hash)
+    echo "Latest block hash: $latest_block_hash"
+    echo "Setting FM_BITCOIN_ASSUME_VALID=$latest_block_hash"
+    echo "FM_BITCOIN_ASSUME_VALID=$latest_block_hash" >>"$INSTALL_DIR/.env"
+  fi
+}
+
 # 5. Set env vars
 set_env_vars() {
   echo

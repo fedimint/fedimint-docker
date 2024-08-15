@@ -41,19 +41,6 @@ services:
       - "traefik.http.routers.fedimintd.entrypoints=websecure"
       - "traefik.http.routers.fedimintd.tls.certresolver=myresolver"
 
-  bitcoind:
-    image: btcpayserver/bitcoin:25.0
-    environment:
-      - BITCOIN_NETWORK=mainnet
-      - BITCOIN_EXTRA_ARGS=-prune=550 -txindex=0
-      - BITCOIN_RPC_USER=${BITCOIN_RPC_USER}
-      - BITCOIN_RPC_PASS=${BITCOIN_RPC_PASS}
-    volumes:
-      - bitcoin_data:/data
-    restart: always
-    
-    
-
   guardian-ui:
     image: fedimintui/guardian-ui:0.4.1
     environment:
@@ -68,7 +55,21 @@ services:
       - "traefik.http.routers.guardian-ui.rule=Host(`${FM_DOMAIN}`)"
       - "traefik.http.routers.guardian-ui.entrypoints=websecure"
       - "traefik.http.routers.guardian-ui.tls.certresolver=myresolver"
+  
+  bitcoind:
+    image: btcpayserver/bitcoin:26.0
+    volumes:
+      - bitcoin_data:/data
+    environment:
+      - BITCOIN_NETWORK=mainnet
+      - BITCOIN_EXTRA_ARGS=-prune=550 -txindex=0
+      - BITCOIN_RPC_USER=${BITCOIN_RPC_USER}
+      - BITCOIN_RPC_PASS=${BITCOIN_RPC_PASS}
+      - BITCOIN_ASSUME_VALID=${BITCOIN_ASSUME_VALID}
+    restart: always
+    
 
 volumes:
   letsencrypt_data:
   fedimintd_data:
+  bitcoin_data:
