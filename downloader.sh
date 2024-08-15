@@ -77,16 +77,16 @@ select_guardian_or_gateway() {
   echo "1. Fedimint Guardian"
   echo "2. Lightning Gateway"
   echo
-  read -p "Enter your choice (1 or 2): " install_type </dev/tty
   while true; do
+    read -p "Enter your choice (1 or 2): " install_type </dev/tty
     case $install_type in
     1)
       FEDIMINT_SERVICE="guardian"
-      break
+      return
       ;;
     2)
       FEDIMINT_SERVICE="gateway"
-      break
+      return
       ;;
     *) echo "Invalid choice. Please enter 1 or 2." ;;
     esac
@@ -101,16 +101,16 @@ select_mainnet_or_mutinynet() {
   echo "1. Mainnet"
   echo "2. Mutinynet"
   echo
-  read -p "Enter your choice (1 or 2): " mainnet_or_mutinynet </dev/tty
   while true; do
+    read -p "Enter your choice (1 or 2): " mainnet_or_mutinynet </dev/tty
     case $mainnet_or_mutinynet in
     1)
       FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_mainnet"
-      break
+      return
       ;;
     2)
       FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_mutinynet"
-      break
+      return
       ;;
     *) echo "Invalid choice. Please enter 1 or 2." ;;
     esac
@@ -127,8 +127,8 @@ select_bitcoind_or_esplora() {
   echo "1. Bitcoind"
   echo "2. Esplora"
   echo
-  read -p "Enter your choice (1 or 2): " bitcoind_or_esplora </dev/tty
   while true; do
+    read -p "Enter your choice (1 or 2): " bitcoind_or_esplora </dev/tty
     case $bitcoind_or_esplora in
     1)
       FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_bitcoind"
@@ -153,8 +153,8 @@ select_local_or_remote_lnd() {
   echo "1. Remote"
   echo "2. Local"
   echo
-  read -p "Enter your choice (1 or 2): " local_or_remote_lnd </dev/tty
   while true; do
+    read -p "Enter your choice (1 or 2): " local_or_remote_lnd </dev/tty
     case $local_or_remote_lnd in
     1)
       FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_remote"
@@ -177,8 +177,8 @@ select_local_or_remote_bitcoind() {
   echo "1. Local"
   echo "2. Remote"
   echo
-  read -p "Enter your choice (1 or 2): " local_or_remote_bitcoind </dev/tty
   while true; do
+    read -p "Enter your choice (1 or 2): " local_or_remote_bitcoind </dev/tty
     case $local_or_remote_bitcoind in
     1)
       FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_local"
