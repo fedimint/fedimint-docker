@@ -53,8 +53,8 @@ check_and_install_docker() {
 
     # Install Docker using Docker's convenience script
     echo "Installing Docker..."
-    curl -fsSL https://get.docker.com -o get-docker.sh
-    sh get-docker.sh
+    curl -fsSL https://get.docker.com | sh
+    echo "Docker installed successfully."
   fi
 
   # Check if Docker Compose plugin is available
