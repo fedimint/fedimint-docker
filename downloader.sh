@@ -155,7 +155,7 @@ build_service_dir() {
   echo "Creating directory $INSTALL_DIR..."
   mkdir -p "$INSTALL_DIR"
 
-  BASE_URL="https://raw.githubusercontent.com/fedimint/fedimint-docker/master/configurations/$FEDIMINT_SERVICE"
+  BASE_URL="https://raw.githubusercontent.com/fedimint/fedimint-docker/blob/master/configurations/$FEDIMINT_SERVICE"
 
   echo "Downloading docker-compose.yaml..."
   curl -sSL "$BASE_URL/docker-compose.yaml" -o "$INSTALL_DIR/docker-compose.yaml"
