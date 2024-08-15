@@ -22,6 +22,7 @@ intro() {
   read -p "Press Enter to continue or Ctrl+C to cancel..." </dev/tty
   echo
 }
+intro
 
 # 1. Check and install docker
 DOCKER_COMPOSE="docker compose"
