@@ -66,11 +66,11 @@ select_mainnet_or_mutinynet() {
   while true; do
     case $mainnet_or_mutinynet in
     1)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE+"_mainnet"
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_mainnet"
       break
       ;;
     2)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE+"_mutinynet"
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_mutinynet"
       break
       ;;
     *) echo "Invalid choice. Please enter 1 or 2." ;;
@@ -90,11 +90,11 @@ select_bitcoind_or_esplora() {
   while true; do
     case $bitcoind_or_esplora in
     1)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE+"_bitcoind"
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_bitcoind"
       break
       ;;
     2)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE+"_esplora"
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_esplora"
       break
       ;;
     *) echo "Invalid choice. Please enter 1 or 2." ;;
@@ -114,11 +114,11 @@ select_local_or_remote_lnd() {
   while true; do
     case $local_or_remote_lnd in
     1)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE+"_remote"
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_remote"
       break
       ;;
     2)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE+"_local"
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_local"
       break
       ;;
     *) echo "Invalid choice. Please enter 1 or 2." ;;
@@ -138,11 +138,11 @@ select_local_or_remote_bitcoind() {
   while true; do
     case $local_or_remote_bitcoind in
     1)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE+"_local"
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_local"
       break
       ;;
     2)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE+"_remote"
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_remote"
       break
       ;;
     *) echo "Invalid choice. Please enter 1 or 2." ;;
@@ -154,9 +154,9 @@ select_local_or_remote_bitcoind() {
 build_service_dir() {
   echo "Creating directory $INSTALL_DIR..."
   mkdir -p "$INSTALL_DIR"
+  BASE_URL="https://raw.githubusercontent.com/fedimint/fedimint-docker/master/configurations/$FEDIMINT_SERVICE"
 
-  BASE_URL="https://raw.githubusercontent.com/fedimint/fedimint-docker/blob/master/configurations/$FEDIMINT_SERVICE"
-
+  echo "Downloading from $BASE_URL"
   echo "Downloading docker-compose.yaml..."
   curl -sSL "$BASE_URL/docker-compose.yaml" -o "$INSTALL_DIR/docker-compose.yaml"
 
