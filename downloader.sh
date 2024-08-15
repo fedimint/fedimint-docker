@@ -187,16 +187,27 @@ installer() {
 set_env_vars() {
   echo "Setting environment variables..."
 
-  # Read the .env file line by line
+  start_processing=false
   while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ $line == "### START ENV CONFIGURATION" ]]; then
+      start_processing=true
+      continue
+    fi
+    if [[ $line == "### END ENV CONFIGURATION" ]]; then
+      break
+    fi
+    if ! $start_processing; then
+      continue
+    fi
+
     # Skip empty lines
     if [[ -z "$line" ]]; then
       continue
     fi
 
-    # If it's a comment, store it
+    # If it's a comment, print it
     if [[ $line == \#* ]]; then
-      comment="$line"
+      echo "$line"
     # If it's a variable
     elif [[ $line == *=* ]]; then
       # Split the line into variable name and value
@@ -207,16 +218,13 @@ set_env_vars() {
       var_value="${var_value%\"}"
       var_value="${var_value#\"}"
 
-      # Display the comment, variable name, and current value
-      echo "$comment"
+      # Display the variable name and current value
       echo "Current value of $var_name: $var_value"
 
-      # Ask user if they want to change the value
-      read -p "Do you want to change this value? (y/N): " change_value
+      # Ask user for new value
+      read -p "Enter new value for $var_name (or press Enter to keep current): " new_value
 
-      if [[ $change_value =~ ^[Yy]$ ]]; then
-        # If yes, prompt for new value
-        read -p "Enter new value for $var_name: " new_value
+      if [[ -n $new_value ]]; then
         # Update the value in the .env file
         sed -i "s|^$var_name=.*|$var_name=\"$new_value\"|" "$INSTALL_DIR/.env"
         echo "Updated $var_name to: $new_value"
@@ -226,10 +234,7 @@ set_env_vars() {
       echo
     fi
   done <"$INSTALL_DIR/.env"
-
-  # Source the updated .env file
-  source "$INSTALL_DIR/.env"
-  echo "Environment variables set."
+  echo "Environment variables set successfully."
 }
 
 # 6. Verify DNS
