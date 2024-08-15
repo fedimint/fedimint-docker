@@ -319,6 +319,22 @@ set_env_vars() {
   echo "Environment variables set."
 }
 
+resolve_host() {
+  local host=$1
+  if [ -x "$(command -v host)" ]; then
+    host $host | awk '/has address/ { print $4 ; exit }'
+  elif [ -x "$(command -v nslookup)" ]; then
+    nslookup $host | awk '/^Address: / { print $2 ; exit }'
+  elif [ -x "$(command -v dig)" ]; then
+    dig $host | awk '/^;; ANSWER SECTION:$/ { getline ; print $5 ; exit }'
+  elif [ -x "$(command -v getent)" ]; then
+    getent hosts $host | awk '{ print $1 ; exit }'
+  else
+    echo "Error: no command found to resolve host $host" >&2
+    exit 1
+  fi
+}
+
 # 6. Verify DNS
 verify_dns() {
   EXTERNAL_IP=$(curl -4 -sSL ifconfig.me)
@@ -329,9 +345,9 @@ verify_dns() {
   echo "So in this case you can not use this script and you must setup the TLS certificates manually or use a script without TLS"
   read -p "Press enter to acknowledge this " -r -n 1 </dev/tty
   echo
-  echo "Create a DNS record pointing to this machine's ip: $EXTERNAL_IP"
+  echo "Create an "A" record via your DNS provider pointing to this machine's ip: $EXTERNAL_IP"
   echo "Once you've set it up, enter the host_name here: (e.g. fedimint.com)"
-  read -p "Enter the host_name: " host_name
+  read -p "Enter the host_name you set in the environment variables: " host_name
   echo "Verifying DNS..."
   echo
   echo "DNS propagation may take a while and and caching may cause issues,"
