@@ -4,7 +4,7 @@
 # 1. Check and install docker
 DOCKER_COMPOSE="docker compose"
 check_and_install_docker() {
-  echo "Checking docker and other required dependencies..."
+  echo "Step 1: Checking docker and other required dependencies..."
   # Check if Docker is installed
   if ! [ -x "$(command -v docker)" ]; then
     # Check if we are running as root
@@ -32,6 +32,7 @@ check_and_install_docker() {
 FEDIMINT_SERVICE=""
 # 2a. Guardian or Gateway
 select_guardian_or_gateway() {
+  echo "Step 2: Select the type of service to install"
   echo
   echo "Install a Fedimint Guardian or a Lightning Gateway?"
   echo
@@ -81,6 +82,8 @@ select_mainnet_or_mutinynet() {
 # 3c-guardian. Bitcoind or Esplora
 select_bitcoind_or_esplora() {
   echo
+  echo "Step 3: Configure the service"
+  echo
   echo "Run with Bitcoind or Esplora?"
   echo
   echo "1. Bitcoind"
@@ -104,6 +107,8 @@ select_bitcoind_or_esplora() {
 
 # 3c-gateway. New or Existing LND
 select_local_or_remote_lnd() {
+  echo
+  echo "Step 3: Configure the service"
   echo
   echo "Connect to a remote LND node or start a new LND node on this machine?"
   echo
@@ -152,6 +157,9 @@ select_local_or_remote_bitcoind() {
 
 # 4. Build the service dir and download the docker-compose and .env files
 build_service_dir() {
+  echo
+  echo "Step 4: Downloading the docker-compose and .env files"
+  echo
   echo "Creating directory $INSTALL_DIR..."
   mkdir -p "$INSTALL_DIR"
   BASE_URL="https://raw.githubusercontent.com/fedimint/fedimint-docker/master/configurations/$FEDIMINT_SERVICE"
@@ -185,6 +193,9 @@ installer() {
 
 # 5. Set env vars
 set_env_vars() {
+  echo
+  echo "Step 5: Setting environment variables"
+  echo
   echo "Setting environment variables..."
 
   start_processing=false
@@ -200,16 +211,19 @@ set_env_vars() {
       continue
     fi
 
+    # Print comments
+    if [[ $line == \#* ]]; then
+      echo "$line"
+      continue
+    fi
+
     # Skip empty lines
     if [[ -z "$line" ]]; then
       continue
     fi
 
-    # If it's a comment, print it
-    if [[ $line == \#* ]]; then
-      echo "$line"
     # If it's a variable
-    elif [[ $line == *=* ]]; then
+    if [[ $line == *=* ]]; then
       # Split the line into variable name and value
       var_name="${line%%=*}"
       var_value="${line#*=}"
@@ -222,11 +236,11 @@ set_env_vars() {
       echo "Current value of $var_name: $var_value"
 
       # Ask user for new value
-      read -p "Enter new value for $var_name (or press Enter to keep current): " new_value
+      read -p "Enter new value for $var_name (or press Enter to keep current): " new_value </dev/tty
 
       if [[ -n $new_value ]]; then
-        # Update the value in the .env file
-        sed -i "s|^$var_name=.*|$var_name=\"$new_value\"|" "$INSTALL_DIR/.env"
+        # Update the value in the .env file (macOS compatible)
+        sed -i '' "s|^$var_name=.*|$var_name=\"$new_value\"|" "$INSTALL_DIR/.env"
         echo "Updated $var_name to: $new_value"
       else
         echo "Keeping current value for $var_name"
@@ -234,13 +248,15 @@ set_env_vars() {
       echo
     fi
   done <"$INSTALL_DIR/.env"
-  echo "Environment variables set successfully."
+
+  echo "Environment variables set."
 }
 
 # 6. Verify DNS
 verify_dns() {
   EXTERNAL_IP=$(curl -4 -sSL ifconfig.me)
-  echo "Setting up TLS certificates and DNS records:"
+  echo
+  echo "Step 6. Setting up TLS certificates and DNS records:"
   echo "Your ip is $EXTERNAL_IP. You __must__ open the port 443 on your firewall to setup the TLS certificates."
   echo "If you are unable to open this port, then the TLS setup and everything else will catastrophically or silently fail."
   echo "So in this case you can not use this script and you must setup the TLS certificates manually or use a script without TLS"
