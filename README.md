@@ -23,7 +23,7 @@ For a Guardian, the script will also step you through configuring your DNS recor
 This script will create and configure a docker-compose.yaml file and a .env file in a directory named `fedimint-service`
 
 ```bash
-curl -sSf https://raw.githubusercontent.com/fedimint/fedimint/master/scripts/downloader.sh | bash
+curl -sSf https://raw.githubusercontent.com/fedimint/fedimint-docker/master/downloader.sh | bash
 ```
 
 ### Step 2: Configuring the Docker Compose

@@ -39,7 +39,7 @@ select_guardian_or_gateway() {
   echo "1. Fedimint Guardian"
   echo "2. Lightning Gateway"
   echo
-  read -p "Enter your choice (1 or 2): " install_type
+  read -p "Enter your choice (1 or 2): " install_type </dev/tty
   while true; do
     case $install_type in
     1)
@@ -63,7 +63,7 @@ select_mainnet_or_mutinynet() {
   echo "1. Mainnet"
   echo "2. Mutinynet"
   echo
-  read -p "Enter your choice (1 or 2): " mainnet_or_mutinynet
+  read -p "Enter your choice (1 or 2): " mainnet_or_mutinynet </dev/tty
   while true; do
     case $mainnet_or_mutinynet in
     1)
@@ -89,7 +89,7 @@ select_bitcoind_or_esplora() {
   echo "1. Bitcoind"
   echo "2. Esplora"
   echo
-  read -p "Enter your choice (1 or 2): " bitcoind_or_esplora
+  read -p "Enter your choice (1 or 2): " bitcoind_or_esplora </dev/tty
   while true; do
     case $bitcoind_or_esplora in
     1)
@@ -115,7 +115,7 @@ select_local_or_remote_lnd() {
   echo "1. Remote"
   echo "2. Local"
   echo
-  read -p "Enter your choice (1 or 2): " local_or_remote_lnd
+  read -p "Enter your choice (1 or 2): " local_or_remote_lnd </dev/tty
   while true; do
     case $local_or_remote_lnd in
     1)
@@ -139,7 +139,7 @@ select_local_or_remote_bitcoind() {
   echo "1. Local"
   echo "2. Remote"
   echo
-  read -p "Enter your choice (1 or 2): " local_or_remote_bitcoind
+  read -p "Enter your choice (1 or 2): " local_or_remote_bitcoind </dev/tty
   while true; do
     case $local_or_remote_bitcoind in
     1)
@@ -203,7 +203,7 @@ set_env_vars() {
     latest_block_hash=$(curl -sSL https://blockstream.info/api/blocks/tip/hash)
     echo "Latest block hash: $latest_block_hash"
 
-    read -p "Press Enter to use this block hash for assume valid or input another blockhash: " user_block_hash
+    read -p "Press Enter to use this block hash for assume valid or input another blockhash: " user_block_hash </dev/tty
     if [ -z "$user_block_hash" ]; then
       block_hash_to_use=$latest_block_hash
     else
