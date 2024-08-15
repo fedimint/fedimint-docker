@@ -236,7 +236,13 @@ set_env_vars() {
   echo
   # Add assume valid in .env if guardian_*_bitcoind_local
   if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
-    # ... (existing code for assume valid)
+    # fetch the latest block hash
+    echo "Fetching chain tip block hash for local bitcoind..."
+    latest_block_hash=$(curl -sSL https://blockstream.info/api/blocks/tip/hash)
+    echo "Latest block hash: $latest_block_hash"
+    echo "Setting FM_BITCOIN_ASSUME_VALID=$latest_block_hash"
+    echo "FM_BITCOIN_ASSUME_VALID=$latest_block_hash" >>"$INSTALL_DIR/.env"
+    echo
   fi
   echo "Setting user input environment variables..."
 
