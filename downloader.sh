@@ -354,7 +354,7 @@ verify_dns() {
   echo
   echo "DNS propagation may take a while and and caching may cause issues,"
   echo "you can verify the DNS mapping in another terminal with:"
-  echo "${host_name[*]} -> $EXTERNAL_IP"
+  echo "$host_name -> $EXTERNAL_IP"
   echo "Using dig: dig +short $host_name"
   echo "Using nslookup: nslookup $host_name"
   echo
@@ -363,12 +363,12 @@ verify_dns() {
   while true; do
     error=""
     echo "Checking DNS records..."
-    resolved_host=$(resolve_host $hose_name)
+    resolved_host=$(resolve_host "$host_name")
     if [[ -z $resolved_host ]]; then
-      echo "Error: $hose_name does not resolve to anything!"
+      echo "Error: $host_name does not resolve to anything!"
       error=true
     elif [[ $resolved_host != "$EXTERNAL_IP" ]]; then
-      echo "Error: $hose_name does not resolve to $EXTERNAL_IP, it resolves to $resolved_host"
+      echo "Error: $host_name does not resolve to $EXTERNAL_IP, it resolves to $resolved_host"
       error=true
     fi
 
