@@ -15,7 +15,7 @@ intro() {
   }
 
   center_text "=============================================="
-  center_text "             Fedimint Installer               "
+  center_text "  Fedimint Docker Service Installer  "
   center_text "=============================================="
   echo
 
