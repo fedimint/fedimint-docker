@@ -25,8 +25,8 @@ services:
     ports:
       - "0.0.0.0:8173:8173"
     environment:
-      - FM_BITCOIN_RPC_KIND=${FM_BITCOIN_RPC_KIND}
-      - FM_BITCOIN_RPC_URL=${FM_BITCOIN_RPC_URL}
+      - FM_DEFAULT_BITCOIN_RPC_KIND=${FM_BITCOIN_RPC_KIND}
+      - FM_DEFAULT_BITCOIN_RPC_URL=${FM_BITCOIN_RPC_URL}
       - FM_BITCOIN_NETWORK=${FM_BITCOIN_NETWORK}
       - FM_BIND_P2P=0.0.0.0:8173
       - FM_P2P_URL=fedimint://${FM_DOMAIN}:8173
@@ -62,7 +62,7 @@ services:
       - bitcoin_data:/data
     environment:
       - BITCOIN_NETWORK=mainnet
-      - BITCOIN_EXTRA_ARGS=prune=550 txindex=0 rpcuser=${BITCOIN_RPC_USER} rpcpassword=${BITCOIN_RPC_PASS} assumevalid=${FM_BITCOIN_ASSUME_VALID}
+      - BITCOIN_EXTRA_ARGS=prune=550 txindex=0 rpcuser=${BITCOIN_RPC_USER} rpcpassword=${BITCOIN_RPC_PASSWORD} assumevalid=${FM_BITCOIN_ASSUME_VALID}
     restart: always
     
 
