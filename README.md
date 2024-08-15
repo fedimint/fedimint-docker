@@ -58,25 +58,25 @@ You're now ready to start using your Fedimint Guardian and perform the initial s
 
 ## Recommended Hardware for Guardian/Gateway Configurations
 
-### Guardian w/remote Bitcoind or Esplora
+#### Guardian w/remote Bitcoind or Esplora
 
 - A Linux box with at least:
   - 2-4GB RAM
   - 50GB Storage
 
-### Guardian + Local Pruned Bitcoind
+#### Guardian + Local Pruned Bitcoind
 
 - A Linux box with at least:
   - 4-8GB RAM
   - 50GB Storage
 
-### Gateway w/remote LND or local LDK
+#### Gateway w/remote LND or local LDK
 
 - A Linux box with at least:
   - 2-4GB RAM
   - 50GB Storage
 
-### Gateway + Local LND
+#### Gateway + Local LND
 
 - A Linux box with at least:
   - 4-8GB RAM

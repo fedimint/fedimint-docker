@@ -45,6 +45,8 @@ services:
     environment:
       - BITCOIN_NETWORK=mainnet
       - BITCOIN_EXTRA_ARGS=-prune=550 -txindex=0
+      - BITCOIN_RPC_USER=${BITCOIN_RPC_USER}
+      - BITCOIN_RPC_PASS=${BITCOIN_RPC_PASS}
     volumes:
       - bitcoin_data:/data
     restart: always
