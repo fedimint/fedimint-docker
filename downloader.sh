@@ -240,8 +240,8 @@ set_env_vars() {
     echo "Fetching chain tip block hash for local bitcoind..."
     latest_block_hash=$(curl -sSL https://blockstream.info/api/blocks/tip/hash)
     echo "Latest block hash: $latest_block_hash"
-    echo "Setting FM_BITCOIN_ASSUME_VALID=$latest_block_hash"
-    echo "FM_BITCOIN_ASSUME_VALID=$latest_block_hash" >>"$INSTALL_DIR/.env"
+    echo "Setting BITCOIN_ASSUME_VALID=$latest_block_hash"
+    echo "BITCOIN_ASSUME_VALID=$latest_block_hash" >>"$INSTALL_DIR/.env"
     echo
   fi
   echo "Setting user input environment variables..."
