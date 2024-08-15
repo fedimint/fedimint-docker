@@ -376,6 +376,7 @@ verify_dns() {
       echo "All DNS records look good"
       break
     else
+      echo
       echo "Some DNS records are not correct"
       read -p "Check again? [Y/n] " -n 1 -r -a check_again </dev/tty
       if [[ ${check_again[*]} =~ ^[Yy]?$ ]]; then
