@@ -191,24 +191,30 @@ installer() {
   build_service_dir
 }
 
-# Add assume valid in .env if guardian_*_bitcoind_local
-set_assume_valid() {
-  if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
-    # fetch the latest block hash
-    echo "Fetching chain tip block hash..."
-    latest_block_hash=$(curl -sSL https://blockstream.info/api/blocks/tip/hash)
-    echo "Latest block hash: $latest_block_hash"
-    echo "Setting FM_BITCOIN_ASSUME_VALID=$latest_block_hash"
-    echo "FM_BITCOIN_ASSUME_VALID=$latest_block_hash" >>"$INSTALL_DIR/.env"
-  fi
-}
-
 # 5. Set env vars
 set_env_vars() {
   echo
   echo "Step 5: Setting environment variables"
   echo
-  echo "Setting environment variables..."
+  # Add assume valid in .env if guardian_*_bitcoind_local
+  if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
+    # fetch the latest block hash
+    echo "Fetching chain tip block hash from blockstream.info..."
+    latest_block_hash=$(curl -sSL https://blockstream.info/api/blocks/tip/hash)
+    echo "Latest block hash: $latest_block_hash"
+
+    read -p "Press Enter to use this block hash for assume valid or input another blockhash: " user_block_hash
+    if [ -z "$user_block_hash" ]; then
+      block_hash_to_use=$latest_block_hash
+    else
+      block_hash_to_use=$user_block_hash
+    fi
+
+    echo "Setting FM_BITCOIN_ASSUME_VALID=$block_hash_to_use"
+    echo "FM_BITCOIN_ASSUME_VALID=$block_hash_to_use" >>"$INSTALL_DIR/.env"
+    echo
+  fi
+  echo "Setting user input environment variables..."
 
   start_processing=false
   while IFS= read -r line || [[ -n "$line" ]]; do
