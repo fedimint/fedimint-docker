@@ -403,7 +403,7 @@ verify_dns() {
 # 7. Run the service
 run_service() {
   echo "Running the service..."
-  cd "$INSTALL_DIR" && docker compose up -d
+  cd "$INSTALL_DIR" && source .env && docker compose up -d
 }
 
 # 8. If bitcoind is local, wait for it to sync
