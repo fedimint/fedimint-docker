@@ -287,9 +287,6 @@ set_env_vars() {
       var_value="${var_value%\"}"
       var_value="${var_value#\"}"
 
-      # Display the variable name and current value
-      echo "Current value of $var_name: $var_value"
-
       # If the variable is not set or empty, prompt for a value
       while [[ -z $var_value ]]; do
         read -p "Enter value for $var_name (cannot be empty): " new_value </dev/tty
