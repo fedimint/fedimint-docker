@@ -55,11 +55,12 @@ services:
   
   bitcoind:
     image: btcpayserver/bitcoin:26.0
+    command: --rpcuser=bitcoin --rpcpassword=bitcoin --prune=550 --txindex=0 --assumevalid=${BITCOIN_ASSUME_VALID}
     volumes:
       - bitcoin_data:/data
     environment:
       - BITCOIN_NETWORK=mainnet
-      - BITCOIN_EXTRA_ARGS=prune=550 txindex=0 rpcuser=${BITCOIN_RPC_USER} rpcpassword=${BITCOIN_RPC_PASSWORD} assumevalid=${BITCOIN_ASSUME_VALID}
+      - BITCOIN_EXTRA_ARGS=rpcuser=bitcoin rpcpassword=bitcoin prune=550 txindex=0 assumevalid=${BITCOIN_ASSUME_VALID}
     restart: always
     
 
