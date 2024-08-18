@@ -57,15 +57,11 @@ services:
     image: btcpayserver/bitcoin:26.0
     ports:
       - 0.0.0.0:8332:8332
+      - 0.0.0.0:8333:8333
     volumes:
       - bitcoin_data:/data
     environment:
-      - BITCOIN_NETWORK=mainnet
-      - BITCOIN_EXTRA_ARGS=|
-        -rpcuser=bitcoin
-        -rpcpassword=bitcoin
-        -prune=550
-        -assumevalid=${BITCOIN_ASSUME_VALID}
+      - BITCOIN_EXTRA_ARGS=rpcuser=bitcoin rpcpassword=bitcoin prune=550 assumevalid=${BITCOIN_ASSUME_VALID}
     restart: always
     
 
