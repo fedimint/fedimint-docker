@@ -408,7 +408,7 @@ warn_bitcoind_sync() {
   echo
   echo "WARNING: Your new local bitcoind node is now syncing"
   echo "This may take a while, you can check the progress with:"
-  echo "docker exec -it bitcoind bitcoin-cli getblockchaininfo"
+  echo "docker exec -it fedimint-service-bitcoind-1 bitcoin-cli getblockchaininfo"
   echo
   echo "Once the sync is complete, you can access the Guardian at:"
   echo "https://$host_name"
