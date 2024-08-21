@@ -61,7 +61,11 @@ services:
     volumes:
       - bitcoin_data:/data
     environment:
-      - BITCOIN_EXTRA_ARGS=rpcuser=bitcoin rpcpassword=bitcoin prune=550 assumevalid=${BITCOIN_ASSUME_VALID}
+      - BITCOIN_EXTRA_ARGS=
+        rpcuser=bitcoin
+        rpcpassword=bitcoin
+        prune=550
+        assumevalid=${BITCOIN_ASSUME_VALID}
     restart: always
     
 
