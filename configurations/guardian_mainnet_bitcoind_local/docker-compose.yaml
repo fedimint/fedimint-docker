@@ -61,7 +61,7 @@ services:
     volumes:
       - bitcoin_data:/data
     environment:
-      - BITCOIN_EXTRA_ARGS=
+      BITCOIN_EXTRA_ARGS: |
         rpcuser=bitcoin
         rpcpassword=bitcoin
         prune=550
