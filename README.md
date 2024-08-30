@@ -2,6 +2,14 @@
 
 This repo contains a downloader script and various docker-compose configurations for running a Fedimint Guardian or a Fedimint Lightning Gateway.
 
+## Downloader Script
+
+This script will create and configure a docker-compose.yaml file and a .env file in a directory named `fedimint-service`
+
+```bash
+bash <(curl -sSf https://raw.githubusercontent.com/fedimint/fedimint-docker/master/downloader.sh)
+```
+
 The downloader script can be run on a fresh linux box and will install all the required software (docker, etc.) , then step you through selecting:
 
 1. Whether you're installing a Guardian or a Lightning Gateway
