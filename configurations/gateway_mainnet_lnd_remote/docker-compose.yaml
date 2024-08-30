@@ -1,4 +1,22 @@
 services:
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+    volumes:
+      - "letsencrypt_data:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    restart: always
+
   gatewayd:
     image: fedimint/gatewayd:v0.4.1
     command: gatewayd lnd
@@ -6,9 +24,9 @@ services:
       # Path to folder containing gateway config and data files
       - FM_GATEWAY_DATA_DIR=/gateway_data
       # Gateway webserver listen address
-      - FM_GATEWAY_LISTEN_ADDR=0.0.0.0:8175
+      - FM_GATEWAY_LISTEN_ADDR=0.0.0.0:80
       # Public URL from which the webserver API is reachable
-      - FM_GATEWAY_API_ADDR=${FM_GATEWAY_API_ADDR}
+      - FM_GATEWAY_API_ADDR=${FM_GATEWAY_DOMAIN}/api/
       # Gateway webserver authentication password
       - FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
       # Configured gateway routing fees Format: <base_msat>,<proportional_millionths>
@@ -16,18 +34,21 @@ services:
       # LND RPC address
       - FM_LND_RPC_ADDR=${FM_LND_RPC_ADDR}
       # LND TLS cert file path
-      - FM_LND_TLS_CERT=${FM_LND_TLS_CERT}
+      - FM_LND_TLS_CERT=/gateway_data/tls.cert
       # LND macaroon file path
-      - FM_LND_MACAROON=${FM_LND_MACAROON}
+      - FM_LND_MACAROON=/gateway_data/admin.macaroon
     volumes:
       - gateway_datadir:/gateway_data
-    ports:
-      - "8175:8175"
-      - "8080:8080"
     depends_on:
       - lnd
     restart: always
     platform: linux/amd64
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.gatewayd.loadbalancer.server.port=80"
+      - "traefik.http.routers.gatewayd.rule=Host(`${FM_GATEWAY_DOMAIN} && Path(`/api/`)`)"
+      - "traefik.http.routers.gatewayd.entrypoints=websecure"
+      - "traefik.http.routers.gatewayd.tls.certresolver=myresolver"
 
   gateway-ui:
     image: fedimintui/gateway-ui:0.4.2
@@ -36,12 +57,18 @@ services:
       - "0.0.0.0:3001:3001"
     environment:
       - PORT=3001
-      - REACT_APP_FM_GATEWAY_API=http://127.0.0.1:8175
+      - REACT_APP_FM_GATEWAY_API=${FM_GATEWAY_DOMAIN}/
       - REACT_APP_FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
     depends_on:
       - gatewayd
     restart: always
     platform: linux/amd64
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.gateway-ui.loadbalancer.server.port=80"
+        - "traefik.http.routers.gateway-ui.rule=Host(`${FM_DOMAIN}`)"
+        - "traefik.http.routers.gateway-ui.entrypoints=websecure"
+        - "traefik.http.routers.gateway-ui.tls.certresolver=myresolver"
 
 volumes:
   gateway_datadir:
