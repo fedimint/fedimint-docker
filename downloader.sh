@@ -193,6 +193,24 @@ select_local_or_remote_bitcoind() {
   done
 }
 
+check_remote_lnd_files() {
+  echo "For remote LND, you need to provide the tls.cert and admin.macaroon files."
+  echo "Please copy these files to the $INSTALL_DIR directory."
+  echo "Once you've moved the files, press Enter to continue."
+
+  while true; do
+    read -p "" </dev/tty
+
+    if [ -f "$INSTALL_DIR/tls.cert" ] && [ -f "$INSTALL_DIR/admin.macaroon" ]; then
+      echo "Files found successfully. Continuing with the installation."
+      break
+    else
+      echo "tls.cert and/or admin.macaroon not found in $INSTALL_DIR."
+      echo "Please make sure both files are in the correct location and press Enter to check again."
+    fi
+  done
+}
+
 # 4. Build the service dir and download the docker-compose and .env files
 build_service_dir() {
   echo
@@ -210,6 +228,10 @@ build_service_dir() {
   curl -sSL "$BASE_URL/.env" -o "$INSTALL_DIR/.env"
 
   echo "Files downloaded successfully."
+
+  if [[ "$FEDIMINT_SERVICE" == *"_lnd_remote" ]]; then
+    check_remote_lnd_files
+  fi
 }
 
 # INSTALLER
@@ -222,10 +244,9 @@ installer() {
     if [[ "$FEDIMINT_SERVICE" == *"_bitcoind" ]]; then
       select_local_or_remote_bitcoind
     fi
-  else
+  else # gateway
     select_local_or_remote_lnd
   fi
-
   build_service_dir
 }
 
@@ -410,7 +431,7 @@ warn_bitcoind_sync() {
   echo "This may take a while, you can check the progress with:"
   echo "docker exec -it fedimint-service-bitcoind-1 bitcoin-cli getblockchaininfo"
   echo
-  echo "Once the sync is complete, you can access the Guardian at:"
+  echo "Once the sync is complete, you can access the service at:"
   echo "https://$host_name"
   echo "And you'll be ready to go!"
   echo
@@ -433,6 +454,6 @@ installer
 set_env_vars
 verify_dns
 run_service
-if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
+if [[ "$FEDIMINT_SERVICE" == *"_local" ]]; then
   warn_bitcoind_sync
 fi
