@@ -17,6 +17,7 @@ services:
 
   fedimintd:
     image: fedimint/fedimintd:v0.4.1
+    container_name: fedimintd
     volumes:
       - fedimintd_data:/data
     ports:
@@ -40,6 +41,7 @@ services:
 
   guardian-ui:
     image: fedimintui/guardian-ui:0.4.2
+    container_name: guardian-ui
     environment:
       - PORT=80
       - REACT_APP_FM_CONFIG_API=wss://${FM_DOMAIN}/ws/
@@ -55,6 +57,7 @@ services:
   
   bitcoind:
     image: btcpayserver/bitcoin:26.0
+    container_name: bitcoind
     ports:
       - 0.0.0.0:8332:8332
       - 0.0.0.0:8333:8333
@@ -62,8 +65,11 @@ services:
       - bitcoin_data:/data
     environment:
       BITCOIN_EXTRA_ARGS: |
+        rpcallowip=0.0.0.0/0
+        rpcbind=0.0.0.0
+        rpcport=8332
         rpcuser=bitcoin
-        rpcpassword=bitcoin
+        rpcpassword=${BITCOIN_RPC_PASSWORD}
         prune=550
         assumevalid=${BITCOIN_ASSUME_VALID}
     restart: always

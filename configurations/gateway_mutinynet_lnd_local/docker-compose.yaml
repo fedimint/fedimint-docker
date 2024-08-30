@@ -22,6 +22,7 @@ services:
 
   gatewayd:
     image: fedimint/gatewayd:v0.4.1
+    container_name: gatewayd
     command: gatewayd lnd
     environment:
       - FM_GATEWAY_DATA_DIR=/gateway_data
@@ -49,6 +50,7 @@ services:
 
   gateway-ui:
     image: fedimintui/gateway-ui:0.4.1
+    container_name: gateway-ui
     environment:
       - PORT=80
       - REACT_APP_FM_GATEWAY_API=https://gatewayd.${FM_GATEWAY_DOMAIN}
@@ -57,15 +59,16 @@ services:
       - gatewayd
     restart: always
     platform: linux/amd64
-  labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.gateway-ui.loadbalancer.server.port=80"
-      - "traefik.http.routers.gateway-ui.rule=Host(`gateway-ui.${FM_GATEWAY_DOMAIN}`)"
-      - "traefik.http.routers.gateway-ui.entrypoints=websecure"
-      - "traefik.http.routers.gateway-ui.tls.certresolver=myresolver"
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.gateway-ui.loadbalancer.server.port=80"
+        - "traefik.http.routers.gateway-ui.rule=Host(`gateway-ui.${FM_GATEWAY_DOMAIN}`)"
+        - "traefik.http.routers.gateway-ui.entrypoints=websecure"
+        - "traefik.http.routers.gateway-ui.tls.certresolver=myresolver"
 
   lnd:
     image: lightninglabs/lnd:v0.18.2-beta
+    container_name: lnd
     entrypoint: bash
     command:
       - -c
@@ -81,6 +84,7 @@ services:
 
   bitcoind:
     image: fedimint/mutinynet-bitcoind:master
+    container_name: bitcoind
     command: --rpcuser=bitcoin --rpcpassword=bitcoin -zmqpubrawblock=tcp://[::]:48332 -zmqpubrawtx=tcp://[::]:48333
     ports:
       - 0.0.0.0:38333:38333
