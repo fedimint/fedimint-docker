@@ -19,7 +19,7 @@ services:
 
   gatewayd:
     image: fedimint/gatewayd:v0.4.1
-    command: gatewayd lnd
+    command: gatewayd ldk
     environment:
       # Path to folder containing gateway config and data files
       - FM_GATEWAY_DATA_DIR=/gateway_data
@@ -39,8 +39,6 @@ services:
       - FM_PORT_LDK=${FM_PORT_LDK}
     volumes:
       - gateway_datadir:/gateway_data
-    depends_on:
-      - lnd
     restart: always
     platform: linux/amd64
     labels:
