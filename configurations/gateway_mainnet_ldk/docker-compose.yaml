@@ -31,14 +31,16 @@ services:
       - FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
       # Configured gateway routing fees Format: <base_msat>,<proportional_millionths>
       - FM_GATEWAY_FEES=0,${FM_GATEWAY_FEES_PROPORTIONAL}
-      # LDK esplora server url
-      - FM_LDK_ESPLORA_URL=${FM_LDK_ESPLORA_URL}
-      # LDK network
-      - FM_LDK_NETWORK=${FM_LDK_NETWORK}
-      # LDK port
-      - FM_PORT_LDK=${FM_PORT_LDK}
+      # LND RPC address
+      - FM_LND_RPC_ADDR=${FM_LND_RPC_ADDR}
+      # LND TLS cert file path
+      - FM_LND_TLS_CERT=/gateway_data/tls.cert
+      # LND macaroon file path
+      - FM_LND_MACAROON=/gateway_data/admin.macaroon
     volumes:
       - gateway_datadir:/gateway_data
+    depends_on:
+      - lnd
     restart: always
     platform: linux/amd64
     labels:
