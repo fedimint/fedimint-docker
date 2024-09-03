@@ -94,6 +94,7 @@ services:
     platform: linux/amd64
 
 volumes:
+  letsencrypt_data:
   bitcoin_datadir:
   lnd_datadir:
   gateway_datadir:

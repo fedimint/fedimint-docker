@@ -71,4 +71,5 @@ services:
         - "traefik.http.routers.gateway-ui.tls.certresolver=myresolver"
 
 volumes:
+  letsencrypt_data:
   gateway_datadir:
