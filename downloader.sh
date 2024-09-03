@@ -570,15 +570,15 @@ if [ -d "$INSTALL_DIR" ]; then
 fi
 
 installer
-local_or_tls
+# local_or_tls
 set_env_vars
-if [[ "$SETUP_TYPE" == "tls" ]]; then
-  verify_dns
-fi
+# if [[ "$SETUP_TYPE" == "tls" ]]; then
+verify_dns
+# fi
 run_service
-if [[ "$SETUP_TYPE" == "localhost" ]]; then
-  print_localhost_instructions
-fi
+# if [[ "$SETUP_TYPE" == "localhost" ]]; then
+#   print_localhost_instructions
+# fi
 if [[ "$FEDIMINT_SERVICE" == *"_local" ]]; then
   warn_bitcoind_sync
 fi
