@@ -288,12 +288,50 @@ remove_traefik_and_labels() {
   echo "Traefik service and labels removed."
 }
 
+# Helper function to install ngrok
+install_ngrok() {
+  echo
+  echo "Would you like to install ngrok for exposing your localhost to the internet?"
+  echo "1. Yes"
+  echo "2. No"
+  echo
+  while true; do
+    read -p "Enter your choice (1 or 2): " install_ngrok_choice </dev/tty
+    case $install_ngrok_choice in
+    1)
+      echo "Installing ngrok..."
+      if command -v snap >/dev/null 2>&1; then
+        echo "Installing ngrok via Snap..."
+        sudo snap install ngrok
+      elif command -v apt >/dev/null 2>&1; then
+        echo "Installing ngrok via Apt..."
+        curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null &&
+          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list &&
+          sudo apt update && sudo apt install ngrok
+      else
+        echo "Error: Neither snap nor apt is available on this system."
+        echo "Please install ngrok manually following the instructions at https://ngrok.com/download"
+        return
+      fi
+      echo "ngrok installed successfully."
+      echo "To use ngrok, run: ngrok http 80"
+      return
+      ;;
+    2)
+      echo "Skipping ngrok installation."
+      return
+      ;;
+    *) echo "Invalid choice. Please enter 1 or 2." ;;
+    esac
+  done
+}
+
 # 5. Select Local or TLS setup
 local_or_tls() {
   echo
   echo "Step 5: Choose setup type"
   echo
-  echo "Do you want to set up on localhost (for development or using a reverse proxy like ngrok) or use TLS with Let's Encrypt?"
+  echo "Do you want to set up on localhost (for development or if you're using a reverse proxy like ngrok) or use TLS with Let's Encrypt?"
   echo
   echo "1. Localhost"
   echo "2. TLS with Let's Encrypt"
@@ -303,10 +341,13 @@ local_or_tls() {
     case $setup_type in
     1)
       remove_traefik_and_labels
-      return
+      install_ngrok
+      echo "localhost"
+      return 0
       ;;
     2)
-      return
+      echo "tls"
+      return 0
       ;;
     *) echo "Invalid choice. Please enter 1 or 2." ;;
     esac
@@ -487,7 +528,20 @@ run_service() {
   cd "$INSTALL_DIR" && source .env && docker compose up -d
 }
 
-# 9. If bitcoind is local, wait for it to sync
+# 9. Print instructions for localhost
+print_localhost_instructions() {
+  echo
+  echo "Your service is running on localhost!"
+  echo "You can access the service at:"
+  echo "http://localhost:80"
+  echo
+  echo "To expose your service to the internet, you can use ngrok:"
+  echo "ngrok http 80"
+  echo "Thanks for using Fedimint! Please report any issues to https://github.com/fedimint/fedimint/issues"
+  echo
+}
+
+# 10. If bitcoind is local, wait for it to sync
 warn_bitcoind_sync() {
   echo
   echo "WARNING: Your new local bitcoind node is now syncing"
@@ -514,10 +568,15 @@ if [ -d "$INSTALL_DIR" ]; then
 fi
 
 installer
-local_or_tls
+SETUP_TYPE=$(local_or_tls)
 set_env_vars
-verify_dns
+if [[ "$SETUP_TYPE" == "tls" ]]; then
+  verify_dns
+fi
 run_service
+if [[ "$SETUP_TYPE" == "localhost" ]]; then
+  print_localhost_instructions
+fi
 if [[ "$FEDIMINT_SERVICE" == *"_local" ]]; then
   warn_bitcoind_sync
 fi
