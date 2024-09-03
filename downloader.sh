@@ -143,6 +143,32 @@ select_bitcoind_or_esplora() {
   done
 }
 
+# 3c-gateway. LDK or LND
+select_ldk_or_lnd() {
+  echo
+  echo "Step 3: Configure the service"
+  echo
+  echo "Run with LDK or LND?"
+  echo
+  echo "1. LDK"
+  echo "2. LND"
+  echo
+  while true; do
+    read -p "Enter your choice (1 or 2): " ldk_or_lnd </dev/tty
+    case $ldk_or_lnd in
+    1)
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_ldk"
+      break
+      ;;
+    2)
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_lnd"
+      break
+      ;;
+    *) echo "Invalid choice. Please enter 1 or 2." ;;
+    esac
+  done
+}
+
 # 3c-gateway. New or Existing LND
 select_local_or_remote_lnd() {
   echo
@@ -245,7 +271,10 @@ installer() {
       select_local_or_remote_bitcoind
     fi
   else # gateway
-    select_local_or_remote_lnd
+    select_ldk_or_lnd
+    if [[ "$FEDIMINT_SERVICE" == *"_lnd" ]]; then
+      select_local_or_remote_lnd
+    fi
   fi
   build_service_dir
 }
