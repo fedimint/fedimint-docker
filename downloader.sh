@@ -149,9 +149,11 @@ select_ldk_or_lnd() {
   echo "Step 3: Configure the service"
   echo
   echo "Run with LDK or LND?"
+  echo "Running with LDK will start a new LDK node on this machine and immediately hook up the gateway to it."
+  echo "If you already have an LND Lightning node you'd like to connect to, choose LND."
   echo
-  echo "1. LDK"
-  echo "2. LND"
+  echo "1. LDK (new LDK node)"
+  echo "2. LND (your existing LND node)"
   echo
   while true; do
     read -p "Enter your choice (1 or 2): " ldk_or_lnd </dev/tty
