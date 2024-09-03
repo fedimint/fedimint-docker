@@ -344,11 +344,11 @@ local_or_tls() {
     1)
       remove_traefik_and_labels
       install_ngrok
-      echo "localhost"
+      SETUP_TYPE="localhost"
       return 0
       ;;
     2)
-      echo "tls"
+      SETUP_TYPE="tls"
       return 0
       ;;
     *) echo "Invalid choice. Please enter 1 or 2." ;;
@@ -359,7 +359,7 @@ local_or_tls() {
 # 6. Set env vars
 set_env_vars() {
   echo
-  echo "Step 5: Setting environment variables"
+  echo "Step 6: Setting environment variables"
   echo
   # Add assume valid in .env if guardian_*_bitcoind_local
   if [[ "$FEDIMINT_SERVICE" == *"_bitcoind_local" ]]; then
@@ -570,7 +570,7 @@ if [ -d "$INSTALL_DIR" ]; then
 fi
 
 installer
-SETUP_TYPE=$(local_or_tls)
+local_or_tls
 set_env_vars
 if [[ "$SETUP_TYPE" == "tls" ]]; then
   verify_dns
