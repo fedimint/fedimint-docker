@@ -279,7 +279,41 @@ installer() {
   build_service_dir
 }
 
-# 5. Set env vars
+# Function to remove traefik and labels
+remove_traefik_and_labels() {
+  echo "Removing traefik service and labels for localhost setup..."
+  sed -i '/^  traefik:/,/^$/d' "$INSTALL_DIR/docker-compose.yaml"
+  sed -i '/^    labels:/,/^$/d' "$INSTALL_DIR/docker-compose.yaml"
+  sed -i '/traefik/d' "$INSTALL_DIR/docker-compose.yaml"
+  echo "Traefik service and labels removed."
+}
+
+# 5. Select Local or TLS setup
+local_or_tls() {
+  echo
+  echo "Step 5: Choose setup type"
+  echo
+  echo "Do you want to set up on localhost (for development or using a reverse proxy like ngrok) or use TLS with Let's Encrypt?"
+  echo
+  echo "1. Localhost"
+  echo "2. TLS with Let's Encrypt"
+  echo
+  while true; do
+    read -p "Enter your choice (1 or 2): " setup_type </dev/tty
+    case $setup_type in
+    1)
+      remove_traefik_and_labels
+      return
+      ;;
+    2)
+      return
+      ;;
+    *) echo "Invalid choice. Please enter 1 or 2." ;;
+    esac
+  done
+}
+
+# 6. Set env vars
 set_env_vars() {
   echo
   echo "Step 5: Setting environment variables"
@@ -384,7 +418,7 @@ resolve_host() {
   fi
 }
 
-# 6. Verify DNS
+# 7. Verify DNS
 verify_dns() {
   EXTERNAL_IP=$(curl -4 -sSL ifconfig.me)
   echo
@@ -447,13 +481,13 @@ verify_dns() {
   done
 }
 
-# 7. Run the service
+# 8. Run the service
 run_service() {
   echo "Running the service..."
   cd "$INSTALL_DIR" && source .env && docker compose up -d
 }
 
-# 8. If bitcoind is local, wait for it to sync
+# 9. If bitcoind is local, wait for it to sync
 warn_bitcoind_sync() {
   echo
   echo "WARNING: Your new local bitcoind node is now syncing"
@@ -480,6 +514,7 @@ if [ -d "$INSTALL_DIR" ]; then
 fi
 
 installer
+local_or_tls
 set_env_vars
 verify_dns
 run_service
