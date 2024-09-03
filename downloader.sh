@@ -152,15 +152,16 @@ select_ldk_or_lnd() {
   echo "Running with LDK will start a new LDK node on this machine and immediately hook up the gateway to it."
   echo "If you already have an LND Lightning node you'd like to connect to, choose LND."
   echo
-  echo "1. LDK (new LDK node)"
+  echo "1. LDK (new LDK node) (PENDING 0.5 RELEASE)"
   echo "2. LND (your existing LND node)"
   echo
   while true; do
     read -p "Enter your choice (1 or 2): " ldk_or_lnd </dev/tty
     case $ldk_or_lnd in
     1)
-      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_ldk"
-      break
+      # FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_ldk"
+      # break
+      echo "We're working on it! Come back once we've cut fedimint 0.5!!!"
       ;;
     2)
       FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_lnd"
