@@ -1,5 +1,0 @@
-# Set up a domain that points to the ipv4 address of the machine fedimintd is being deployed to
-FM_DOMAIN=my-super-host.com
-
-FM_BITCOIN_RPC_KIND=esplora
-FM_BITCOIN_RPC_URL=https://blockstream.info/api/
