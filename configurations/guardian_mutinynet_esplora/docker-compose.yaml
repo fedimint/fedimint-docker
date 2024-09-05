@@ -41,7 +41,7 @@ services:
       - "traefik.http.routers.fedimintd.tls.certresolver=myresolver"
 
   guardian-ui:
-    image: fedimintui/guardian-ui:0.4.1
+    image: fedimintui/guardian-ui:v0.4.2
     environment:
       - PORT=80
       - REACT_APP_FM_CONFIG_API=wss://${FM_DOMAIN}/ws/
