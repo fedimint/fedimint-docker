@@ -18,7 +18,7 @@ services:
     restart: always
 
   gatewayd:
-    image: fedimint/gatewayd:v0.4.1
+    image: fedimint/gatewayd:v0.4.3
     command: gatewayd lnd
     ports:
       - "0.0.0.0:80:80"
@@ -32,7 +32,7 @@ services:
       # Gateway webserver authentication password
       - FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
       # Configured gateway routing fees Format: <base_msat>,<proportional_millionths>
-      - FM_GATEWAY_FEES=0,10000
+      - FM_GATEWAY_FEES=${FM_GATEWAY_FEES}
       # LND RPC address
       - FM_LND_RPC_ADDR=${FM_LND_RPC_ADDR}
       # LND TLS cert file path
@@ -59,7 +59,7 @@ services:
       - "0.0.0.0:3001:3001"
     environment:
       - PORT=3001
-      - REACT_APP_FM_GATEWAY_API=${FM_GATEWAY_DOMAIN}/api/
+      - REACT_APP_FM_GATEWAY_API=https://${FM_GATEWAY_DOMAIN}/api/
       - REACT_APP_FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
     depends_on:
       - gatewayd

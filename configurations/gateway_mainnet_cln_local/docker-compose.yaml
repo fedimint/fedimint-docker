@@ -29,7 +29,7 @@ services:
       - FM_GATEWAY_LISTEN_ADDR=0.0.0.0:80
       - FM_GATEWAY_API_ADDR=https://${FM_GATEWAY_DOMAIN}
       - FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
-      - FM_GATEWAY_FEES=${FM_GATEWAY_BASE_FEE},${FM_GATEWAY_PROPORTIONAL_FEE}
+      - FM_GATEWAY_FEES=${FM_GATEWAY_FEES}
     volumes:
       - gateway_datadir:/gateway_data
       - cln_datadir:/cln_data:ro
@@ -40,7 +40,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.gatewayd.loadbalancer.server.port=80"
-      - "traefik.http.routers.gatewayd.rule=Host(`${FM_GATEWAY_DOMAIN}`)"
+      - "traefik.http.routers.gatewayd.rule=Host(`${FM_GATEWAY_DOMAIN} && Path(`/api/`)`)"
       - "traefik.http.routers.gatewayd.entrypoints=websecure"
       - "traefik.http.routers.gatewayd.tls.certresolver=myresolver"
 
@@ -56,6 +56,26 @@ services:
     volumes:
       - ./cfg/cln-gateway-data:/lightning
     restart: always
+
+  gateway-ui:
+    image: fedimintui/gateway-ui:0.4.2
+    # image: gateway-ui
+    ports:
+      - "0.0.0.0:3001:3001"
+    environment:
+      - PORT=3001
+      - REACT_APP_FM_GATEWAY_API=https://${FM_GATEWAY_DOMAIN}/api/
+      - REACT_APP_FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
+    depends_on:
+      - gatewayd
+    restart: always
+    platform: linux/amd64
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.gateway-ui.loadbalancer.server.port=80"
+        - "traefik.http.routers.gateway-ui.rule=Host(`${FM_GATEWAY_DOMAIN}`)"
+        - "traefik.http.routers.gateway-ui.entrypoints=websecure"
+        - "traefik.http.routers.gateway-ui.tls.certresolver=myresolver"
 
 volumes:
   letsencrypt_data:
