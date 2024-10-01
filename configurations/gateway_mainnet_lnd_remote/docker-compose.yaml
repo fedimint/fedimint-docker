@@ -20,6 +20,8 @@ services:
   gatewayd:
     image: fedimint/gatewayd:v0.4.1
     command: gatewayd lnd
+    ports:
+      - "0.0.0.0:80:80"
     environment:
       # Path to folder containing gateway config and data files
       - FM_GATEWAY_DATA_DIR=/gateway_data

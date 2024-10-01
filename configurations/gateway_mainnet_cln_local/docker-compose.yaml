@@ -21,6 +21,8 @@ services:
     image: fedimint/gatewayd:v0.4.3
     container_name: gatewayd
     command: gatewayd cln --cln-extension-addr=http://cln:3301
+    ports:
+      - "0.0.0.0:80:80"
     environment:
       - RUST_LOG=debug
       - FM_GATEWAY_DATA_DIR=/gateway_data
