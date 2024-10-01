@@ -30,6 +30,7 @@ services:
       - FM_GATEWAY_API_ADDR=https://${FM_GATEWAY_DOMAIN}
       - FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
       - FM_GATEWAY_FEES=${FM_GATEWAY_FEES}
+      - FM_GATEWAY_LIGHTNING_MODULE_MODE=LNv1
     volumes:
       - gateway_datadir:/gateway_data
       - cln_datadir:/cln_data:ro
