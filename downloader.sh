@@ -143,8 +143,8 @@ select_bitcoind_or_esplora() {
   done
 }
 
-# 3c-gateway. LDK or LND
-select_ldk_or_lnd() {
+# 3c-gateway. Gateway Type
+select_gw_type() {
   echo
   echo "Step 3: Configure the gateway service"
   echo
