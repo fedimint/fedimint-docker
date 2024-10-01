@@ -1,0 +1,61 @@
+services:
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+    volumes:
+      - "letsencrypt_data:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    restart: always
+
+  gatewayd:
+    image: fedimint/gatewayd:v0.4.3
+    container_name: gatewayd
+    command: gatewayd cln --cln-extension-addr=http://cln:3301
+    environment:
+      - RUST_LOG=debug
+      - FM_GATEWAY_DATA_DIR=/gateway_data
+      - FM_GATEWAY_LISTEN_ADDR=0.0.0.0:80
+      - FM_GATEWAY_API_ADDR=https://${FM_GATEWAY_DOMAIN}
+      - FM_GATEWAY_PASSWORD=${FM_GATEWAY_PASSWORD}
+      - FM_GATEWAY_FEES=${FM_GATEWAY_BASE_FEE},${FM_GATEWAY_PROPORTIONAL_FEE}
+    volumes:
+      - gateway_datadir:/gateway_data
+      - cln_datadir:/cln_data:ro
+    depends_on:
+      - cln
+    restart: always
+    platform: linux/amd64
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.gatewayd.loadbalancer.server.port=80"
+      - "traefik.http.routers.gatewayd.rule=Host(`${FM_GATEWAY_DOMAIN}`)"
+      - "traefik.http.routers.gatewayd.entrypoints=websecure"
+      - "traefik.http.routers.gatewayd.tls.certresolver=myresolver"
+
+  cln:
+    image: fedimint/cln-light-gateway:master
+    container_name: cln
+    environment:
+      - NETWORK=${NETWORK}
+      - CLN_EXTENSION_ADDR=0.0.0.0:3301 # cln-extension-addr from image, do not change
+    ports:
+      - "9735:9735" # lightning network port, do not change
+      - "3301:3301" # cln-extension-addr from image, do not change
+    volumes:
+      - ./cfg/cln-gateway-data:/lightning
+    restart: always
+
+volumes:
+  letsencrypt_data:
+  cln_datadir:
+  gateway_datadir:
