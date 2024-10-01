@@ -39,6 +39,7 @@ services:
       - FM_LND_TLS_CERT=/gateway_data/tls.cert
       # LND macaroon file path
       - FM_LND_MACAROON=/gateway_data/admin.macaroon
+      - FM_GATEWAY_LIGHTNING_MODULE_MODE=LNv1
     volumes:
       - gateway_datadir:/gateway_data
     depends_on:
