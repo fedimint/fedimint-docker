@@ -96,13 +96,14 @@ select_guardian_or_gateway() {
 # 2b. Mainnet or Mutinynet
 select_mainnet_or_mutinynet() {
   echo
-  echo "Run on Mainnet or Mutinynet?"
+  echo "Run on which network?"
   echo
   echo "1. Mainnet"
   echo "2. Mutinynet"
+  echo "3. Testnet"
   echo
   while true; do
-    read -p "Enter your choice (1 or 2): " mainnet_or_mutinynet </dev/tty
+    read -p "Enter your choice (1, 2 or 3): " mainnet_or_mutinynet </dev/tty
     case $mainnet_or_mutinynet in
     1)
       FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_mainnet"
@@ -112,7 +113,11 @@ select_mainnet_or_mutinynet() {
       FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_mutinynet"
       return
       ;;
-    *) echo "Invalid choice. Please enter 1 or 2." ;;
+    3)
+      FEDIMINT_SERVICE=$FEDIMINT_SERVICE"_testnet"
+      return
+      ;;
+    *) echo "Invalid choice. Please enter 1, 2 or 3." ;;
     esac
   done
 }
