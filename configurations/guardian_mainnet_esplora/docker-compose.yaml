@@ -40,7 +40,7 @@ services:
       - "traefik.http.routers.fedimintd.tls.certresolver=myresolver"
 
   guardian-ui:
-    image: fedimintui/guardian-ui:0.4.2
+    image: fedimintui/fedimint-ui:0.4.3
     container_name: guardian-ui
     environment:
       - PORT=80

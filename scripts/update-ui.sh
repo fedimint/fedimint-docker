@@ -9,8 +9,8 @@ fi
 
 # Update docker-compose.yaml files
 find configurations -name docker-compose.yaml | while read -r file; do
-  sed -i '' "s|image: fedimintui/guardian-ui:[0-9.]*|image: fedimintui/guardian-ui:$version|g" "$file"
-  sed -i '' "s|image: fedimintui/gateway-ui:[0-9.]*|image: fedimintui/gateway-ui:$version|g" "$file"
+  sed -i '' "s|image: fedimintui/fedimint-ui:[0-9.]*|image: fedimintui/fedimint-ui:$version|g" "$file"
+  sed -i '' "s|image: fedimintui/fedimint-ui:[0-9.]*|image: fedimintui/fedimint-ui:$version|g" "$file"
   echo "Updated Guardian and Gateway UI version to $version in $file"
 done
 

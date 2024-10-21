@@ -40,7 +40,7 @@ services:
       - "traefik.http.routers.fedimintd.tls.certresolver=myresolver"
 
   guardian-ui:
-    image: fedimintui/guardian-ui:0.4.2
+    image: fedimintui/fedimint-ui:0.4.3
     container_name: guardian-ui
     environment:
       - PORT=80
@@ -54,7 +54,7 @@ services:
       - "traefik.http.routers.guardian-ui.rule=Host(`${FM_DOMAIN}`)"
       - "traefik.http.routers.guardian-ui.entrypoints=websecure"
       - "traefik.http.routers.guardian-ui.tls.certresolver=myresolver"
-  
+
   bitcoind:
     image: btcpayserver/bitcoin:26.0
     container_name: bitcoind
@@ -73,7 +73,6 @@ services:
         prune=550
         assumevalid=${BITCOIN_ASSUME_VALID}
     restart: always
-    
 
 volumes:
   letsencrypt_data:

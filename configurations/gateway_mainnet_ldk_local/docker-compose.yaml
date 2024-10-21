@@ -49,7 +49,7 @@ services:
       - "traefik.http.routers.gatewayd.tls.certresolver=myresolver"
 
   gateway-ui:
-    image: fedimintui/gateway-ui:0.4.2
+    image: fedimintui/fedimint-ui:0.4.3
     # image: gateway-ui
     ports:
       - "0.0.0.0:3001:3001"
@@ -62,11 +62,11 @@ services:
     restart: always
     platform: linux/amd64
     labels:
-        - "traefik.enable=true"
-        - "traefik.http.services.gateway-ui.loadbalancer.server.port=80"
-        - "traefik.http.routers.gateway-ui.rule=Host(`${FM_GATEWAY_DOMAIN}`)"
-        - "traefik.http.routers.gateway-ui.entrypoints=websecure"
-        - "traefik.http.routers.gateway-ui.tls.certresolver=myresolver"
+      - "traefik.enable=true"
+      - "traefik.http.services.gateway-ui.loadbalancer.server.port=80"
+      - "traefik.http.routers.gateway-ui.rule=Host(`${FM_GATEWAY_DOMAIN}`)"
+      - "traefik.http.routers.gateway-ui.entrypoints=websecure"
+      - "traefik.http.routers.gateway-ui.tls.certresolver=myresolver"
 
 volumes:
   letsencrypt_data:
