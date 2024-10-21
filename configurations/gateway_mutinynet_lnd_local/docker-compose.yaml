@@ -21,7 +21,7 @@ services:
     restart: always
 
   gatewayd:
-    image: fedimint/gatewayd:v0.4.1
+    image: fedimint/gatewayd:v0.4.3
     container_name: gatewayd
     command: gatewayd lnd
     environment:

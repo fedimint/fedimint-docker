@@ -12,3 +12,7 @@ find configurations -name docker-compose.yaml | while read -r file; do
   sed -i '' "s|image: fedimint/fedimintd:v[0-9.]*|image: fedimint/fedimintd:v$version|g" "$file"
   echo "Updated Fedimintd and Gatewayd version to $version in $file"
 done
+
+# Update README.md
+sed -i '' "s|Current version of Fedimintd and Gatewayd: \`v[0-9.]*\`|Current version of Fedimintd and Gatewayd: \`v$version\`|g" README.md
+echo "Updated version in README.md to $version"

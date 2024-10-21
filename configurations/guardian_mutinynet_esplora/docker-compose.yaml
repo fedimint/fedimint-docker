@@ -19,7 +19,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   fedimintd:
-    image: fedimint/fedimintd:v0.4.1
+    image: fedimint/fedimintd:v0.4.3
     volumes:
       - fedimintd_data:/data
     ports:
