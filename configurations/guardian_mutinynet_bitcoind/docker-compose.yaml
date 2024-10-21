@@ -19,7 +19,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   fedimintd:
-    image: fedimint/fedimintd:v0.4.1
+    image: fedimint/fedimintd:v0.4.3
     volumes:
       - fedimintd_data:/data
     ports:
@@ -41,7 +41,7 @@ services:
       - "traefik.http.routers.fedimintd.tls.certresolver=myresolver"
 
   guardian-ui:
-    image: fedimintui/guardian-ui:0.4.1
+    image: fedimintui/fedimint-ui:0.4.3
     environment:
       - PORT=80
       - REACT_APP_FM_CONFIG_API=wss://${FM_DOMAIN}/ws/

@@ -2,6 +2,9 @@
 
 This repo contains a downloader script and various docker-compose configurations for running a Fedimint Guardian or a Fedimint Lightning Gateway.
 
+Current version of Fedimintd and Gatewayd: `v0.4.3`
+Current version of UI: `0.4.3`
+
 ## Downloader Script
 
 This script will create and configure a docker-compose.yaml file and a .env file in a directory named `fedimint-service`
