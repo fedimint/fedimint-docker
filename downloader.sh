@@ -472,6 +472,19 @@ resolve_host() {
   fi
 }
 
+get_configured_domain() {
+  # Get either FM_GATEWAY_DOMAIN or FM_DOMAIN from the .env file
+  source "$INSTALL_DIR/.env"
+  if [[ -n $FM_GATEWAY_DOMAIN ]]; then
+    echo $FM_GATEWAY_DOMAIN
+  elif [[ -n $FM_DOMAIN ]]; then
+    echo $FM_DOMAIN
+  else
+    echo "Error: FM_GATEWAY_DOMAIN or FM_DOMAIN not set in .env file" >&2
+    exit 1
+  fi
+}
+
 # 7. Verify DNS
 verify_dns() {
   EXTERNAL_IP=$(curl -4 -sSL ifconfig.me)
@@ -484,7 +497,9 @@ verify_dns() {
   echo
   echo "Create an A record via your DNS provider pointing to this machine's ip: $EXTERNAL_IP"
   echo "Once you've set it up, you can continue with the installation"
-  read -p "Enter the host_name you set in the environment variables: " host_name
+  echo
+  host_name=$(get_configured_domain)
+  read -p "Press enter to continue after setting up the A record for $host_name to $EXTERNAL_IP" -r -n 1 </dev/tty
   echo "Verifying DNS..."
   echo
   echo "DNS propagation may take a while and and caching may cause issues,"
