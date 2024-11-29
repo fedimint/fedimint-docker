@@ -1,5 +1,7 @@
 services:
   traefik:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: "traefik:v2.10"
     container_name: "traefik"
     command:
@@ -18,6 +20,8 @@ services:
     restart: always
 
   gatewayd:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimint/gatewayd:master
     command: gatewayd ldk
     environment:
@@ -49,6 +53,8 @@ services:
       - "traefik.http.routers.gatewayd.tls.certresolver=myresolver"
 
   gateway-ui:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimintui/fedimint-ui:0.4.3
     # image: gateway-ui
     ports:
