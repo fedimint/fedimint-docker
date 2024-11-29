@@ -3,6 +3,8 @@ version: "3"
 
 services:
   traefik:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: "traefik:v2.10"
     container_name: "traefik"
     command:
@@ -21,6 +23,8 @@ services:
     restart: always
 
   gatewayd:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimint/gatewayd:v0.4.3
     container_name: gatewayd
     command: gatewayd lnd
@@ -49,6 +53,8 @@ services:
       - "traefik.http.routers.gatewayd.tls.certresolver=myresolver"
 
   gateway-ui:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimintui/fedimint-ui:0.4.3
     container_name: gateway-ui
     environment:
@@ -67,6 +73,8 @@ services:
       - "traefik.http.routers.gateway-ui.tls.certresolver=myresolver"
 
   lnd:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: lightninglabs/lnd:v0.18.2-beta
     container_name: lnd
     entrypoint: bash
@@ -83,6 +91,8 @@ services:
     restart: always
 
   bitcoind:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimint/mutinynet-bitcoind:master
     container_name: bitcoind
     command: --rpcuser=bitcoin --rpcpassword=bitcoin -zmqpubrawblock=tcp://[::]:48332 -zmqpubrawtx=tcp://[::]:48333

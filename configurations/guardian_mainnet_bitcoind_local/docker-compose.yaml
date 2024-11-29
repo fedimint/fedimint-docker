@@ -1,6 +1,8 @@
 # See the .env file for config options
 services:
   traefik:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: "traefik:v2.10"
     container_name: "traefik"
     command:
@@ -16,6 +18,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   fedimintd:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimint/fedimintd:v0.4.3
     container_name: fedimintd
     volumes:
@@ -40,6 +44,8 @@ services:
       - "traefik.http.routers.fedimintd.tls.certresolver=myresolver"
 
   guardian-ui:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimintui/fedimint-ui:0.4.3
     container_name: guardian-ui
     environment:
@@ -56,6 +62,8 @@ services:
       - "traefik.http.routers.guardian-ui.tls.certresolver=myresolver"
 
   bitcoind:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: btcpayserver/bitcoin:26.0
     container_name: bitcoind
     ports:

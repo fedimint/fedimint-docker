@@ -4,6 +4,8 @@ version: "3.3"
 
 services:
   traefik:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: "traefik:v2.10"
     container_name: "traefik"
     command:
@@ -19,6 +21,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   fedimintd:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimint/fedimintd:v0.4.3
     volumes:
       - fedimintd_data:/data
@@ -41,6 +45,8 @@ services:
       - "traefik.http.routers.fedimintd.tls.certresolver=myresolver"
 
   guardian-ui:
+    logging:
+      driver: "local" # Do some log rotation by default
     image: fedimintui/fedimint-ui:0.4.3
     environment:
       - PORT=80
